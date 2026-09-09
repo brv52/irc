@@ -4,6 +4,15 @@
 #include <iostream>
 #include <stdlib.h>
 #include "Server.hpp"
+#include <csignal>
+
+bool g_serverRunning = true;
+
+void signalHandler(int signum) {
+    (void)signum;
+    g_serverRunning = false;
+    std::cout << "\n[Server] Shutting down..." << std::endl;
+}
 
 int parsePort(const char* rawPort) {
     if (!rawPort || *rawPort == '\0')
@@ -37,6 +46,8 @@ int main(int argc, char** argv) {
     try {
         int port = parsePort(argv[1]);
         std::string password = parsePassword(argv[2]);
+        signal(SIGINT, signalHandler);
+        signal(SIGQUIT, signalHandler);
         Server server(port, password);
         server.run();
     }

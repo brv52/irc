@@ -8,6 +8,8 @@
 #include "User.hpp"
 #include "Channel.hpp"
 
+extern bool g_serverRunning;
+
 class Server {
     private:
         int _socket;

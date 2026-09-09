@@ -54,7 +54,7 @@ Server::~Server() {
 void Server::run() {
     std::cout << "[Server] Started and listening on port " << _port << "..." << std::endl;
 
-    while(true) {
+    while(g_serverRunning) {
         for(std::size_t i = 1; i < _connections.size(); ++i) {
             int userSocket = _connections[i].fd;
             if (!_users[userSocket].writeBuffer().empty())
@@ -277,6 +277,8 @@ void Server::processCommand(User& user, const std::string& cmd) {
         if (!args.empty() && args[args.length() - 1] == '\r')
             args.erase(args.length() - 1);
         handlePing(user, args);
+    } else if (cName == "QUIT") {
+        return;
     } else {
         user.writeBuffer() += ":ircserver 421 " + clientName + " " + cName + " :Unknown command\r\n";
     }
