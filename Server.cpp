@@ -90,6 +90,7 @@ void Server::run() {
             if (!alive) {
                 std::cout << "[Server] Client " << userSocket << " disconnected." << std::endl;
                 
+                std::string disconnectedNick = _users[userSocket].nickname();
                 std::map<std::string, Channel>::iterator it = _channels.begin();
                 while (it != _channels.end()) {
                     it->second.removeMember(userSocket);
@@ -99,8 +100,10 @@ void Server::run() {
                         ++it;
                         _channels.erase(deleteIt);
                     } else {
-                        std::string quitMsg = ":" + _users[userSocket].nickname() + " QUIT :Client disconnected\r\n";
-                        it->second.broadcast(quitMsg);
+                        if (!disconnectedNick.empty()) {
+                            std::string quitMsg = ":" + disconnectedNick + " QUIT :Client disconnected\r\n";
+                            it->second.broadcast(quitMsg);
+                        }
                         ++it;
                     }
                 }
